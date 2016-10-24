@@ -95,6 +95,8 @@ int Display::initialize(){
 #else
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 #endif
 
     /* Create a windowed mode window and its OpenGL context */
@@ -484,9 +486,9 @@ void Display::mouseMoved(GLFWwindow *window, double x, double y){
     if(dragging){
         double delta_x = x - cursor_x;
         double delta_y = y - cursor_y;
-        camera->rotate((float)(delta_x*RATE), (float)(delta_y*RATE));
-        cursor_x = x;
-        cursor_y = y;
+		camera->rotate((float)(delta_x*RATE), (float)(delta_y*RATE));
+		cursor_x = x;
+		cursor_y = y;
     }
 }
 

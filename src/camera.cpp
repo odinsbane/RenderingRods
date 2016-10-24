@@ -54,6 +54,7 @@ void Camera::setViewMatrices(){
     orientationMatrix = glm::lookAt( position, location, up );
     
     perspectiveMatrix = perspectiveMatrix*orientationMatrix;
+	
     
     glUseProgram(theProgram);
     
@@ -68,16 +69,38 @@ void Camera::setDepthMVP(glm::mat4 depthMVP){
 	
 	GLuint id = glGetUniformLocation(theProgram, "depthBiasMatrix");
 	
+	printf("depth matrix\n");
+	for(int i = 0; i<4; i++){
+		for(int j = 0; j<4; j++){
+			printf("%f\t", depthMVP[i][j]);
+		}
+		printf("\n");
+	}
 	glUseProgram(theProgram);
 	glUniformMatrix4fv(id, 1, GL_FALSE, &depthMVP[0][0]);
     glUseProgram(0);
 }
 
+bool isNaN(double d){
+	if(d>0||d<=0) return false;
+	return true;
+}
+bool anyNaN(glm::vec4 vec){
+	return isNaN(vec[0])||isNaN(vec[1])||isNaN(vec[2])||isNaN(vec[3]);
+}
 void Camera::rotate(float dtheta, float dphi){
+	
 	
 	glm::vec4 nloc = glm::inverse(orientationMatrix)*glm::vec4(dphi, dtheta, 0.0f, 0.0f);
 	float angle = glm::length(nloc)*5;
+		
 	nloc = glm::normalize(nloc);
+	
+	if(anyNaN(nloc)){
+		//angle is probably zero.
+		return;
+	}
+
 	
 	glm::vec3 old = position - location;
 	

@@ -6,7 +6,7 @@ Reader::Reader(const std::string &filename){
 
 
 std::vector<Rod*> Reader::loadRods(){
-
+	closed=false;
     std::vector<Rod*> rods;
 	long time = nextLong();
 	
