@@ -11,6 +11,9 @@ int main(int argc, char** args){
 		RodRepresentation* rep = new RodRepresentation(rod, display.getProgram());
 		display.addRodRepresentation(rep);
 	}
-	
+    PlaneRepresentation* rep = new PlaneRepresentation();
+    rep->setup(display.getProgram());
+    display.addRepresentation(rep);
 	display.graphicsLoop();
+    
 }

@@ -69,13 +69,6 @@ void Camera::setDepthMVP(glm::mat4 depthMVP){
 	
 	GLuint id = glGetUniformLocation(theProgram, "depthBiasMatrix");
 	
-	printf("depth matrix\n");
-	for(int i = 0; i<4; i++){
-		for(int j = 0; j<4; j++){
-			printf("%f\t", depthMVP[i][j]);
-		}
-		printf("\n");
-	}
 	glUseProgram(theProgram);
 	glUniformMatrix4fv(id, 1, GL_FALSE, &depthMVP[0][0]);
     glUseProgram(0);

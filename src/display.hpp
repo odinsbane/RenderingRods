@@ -73,11 +73,74 @@ class Shadows{
 		bool buildProgram();
         void setProjectViewMatrix();
 		GLuint getTextureID();
+        ~Shadows(){
+            glDeleteProgram(program);
+            glDeleteTextures(1, &depthTexture);
+            glDeleteFramebuffers(1, &framebufferName);
+        }
 };
 
 class Representation{
 public:
     virtual void render(GLuint program){}
+};
+
+class PlaneRepresentation : public Representation{
+    //two triangles put together to make a square
+    float *positions;
+    float *normals;
+    float *uvPositions;
+    int *indices;
+
+    GLuint posBO, normBO, dataBO, indexBO, VAO;
+
+    public:
+    PlaneRepresentation();
+    void render(GLuint program);
+    void setup(GLuint program);
+    ~PlaneRepresentation(){
+        
+        delete[] positions;
+        delete[] normals;
+        delete[] uvPositions;
+        delete[] indices;
+        
+        //posBO, normBO, dataBO, indexBO, VAO
+        glDeleteBuffers(1, &indexBO);
+        glDeleteBuffers(1, &posBO);
+        glDeleteBuffers(1, &dataBO);
+        glDeleteBuffers(1, &normBO);
+        glDeleteVertexArrays(1, &VAO);
+    }
+    
+};
+
+class SpringRepresentation{
+    float* positions;
+    float* normals;
+    float* data;
+    int* indexes;
+    GLuint programId;
+    GLuint pBO, nBO,dBO, iBO, vao;
+    void updateRepresentation(glm::dvec3 &a, glm::dvec3 &b);
+public:
+    SpringRepresentation(glm::dvec3 &a, glm::dvec3 &b);
+    void render(GLuint program);
+    
+    ~SpringRepresentation(){
+        
+        delete[] positions;
+        delete[] indexes;
+        delete[] normals;
+        delete[] data;
+        
+        glDeleteBuffers(1, &iBO);
+        glDeleteBuffers(1, &pBO);
+        glDeleteBuffers(1, &dBO);
+        glDeleteBuffers(1, &nBO);
+        glDeleteVertexArrays(1, &vao);
+    }
+
 };
 
 class RodRepresentation : public Representation{
@@ -98,11 +161,16 @@ class RodRepresentation : public Representation{
     void render(GLuint program);
     void updateData(std::vector<glm::vec3*> &values);
     ~RodRepresentation(){
+        
         delete[] points;
         delete[] indexes;
+        delete[] normals;
+        delete[] data;
+        
         glDeleteBuffers(1, &iBO);
         glDeleteBuffers(1, &pBO);
         glDeleteBuffers(1, &dBO);
+        glDeleteBuffers(1, &nBO);
         glDeleteVertexArrays(1, &vao);
     }
 };
@@ -136,8 +204,6 @@ public:
     void shutdown();
     void graphicsLoop();
     int getRunning();
-    ~Display(){
-    }
     void keyPressed(GLFWwindow* window, int key, int scancode, int action, int mods);
     void mousePressed(GLFWwindow* window, int button, int mod);
     void mouseReleased(GLFWwindow* window, int button, int mod);
@@ -149,6 +215,14 @@ public:
     double RATE = 0.001;
 
     void moveLights(float dx, float dy, float dz);
+    ~Display(){
+        for(Representation* rep: representations){
+            delete rep;
+        }
+        delete shadows;
+        delete camera;
+        glDeleteProgram(program);
+    }
 };
 
 
