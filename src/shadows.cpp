@@ -68,9 +68,10 @@ bool Shadows::buildProgram(){
 void Shadows::setProjectViewMatrix(){
 	glm::vec3 light = camera->getLightPosition();
 	glm::vec3 location = camera->getTarget();
-	
-	glm::vec3 lightInvDir = location - light;
-	GLuint depthMatrixID = glGetUniformLocation(program, "depthMVP");
+	    
+	glm::vec3 lightInvDir = light - location;
+    
+    GLuint depthMatrixID = glGetUniformLocation(program, "depthMVP");
 	
 	// Compute the MVP matrix from the light's point of view
  	glm::mat4 depthProjectionMatrix = glm::ortho<float>(-10,10,-10,10,-10,20);
@@ -107,9 +108,7 @@ bool Shadows::setTarget(){
 	 
 	 glGenTextures(1, &depthTexture);
 	 glBindTexture(GL_TEXTURE_2D, depthTexture);
-     float zeros[1024*1024] = {100.0};
-     for(int i = 0;i<1024*1024; i++){zeros[i] = i - 1024*512;}
-	 glTexImage2D(GL_TEXTURE_2D, 0,GL_DEPTH_COMPONENT16, 1024, 1024, 0,GL_DEPTH_COMPONENT, GL_FLOAT, 0);
+     glTexImage2D(GL_TEXTURE_2D, 0,GL_DEPTH_COMPONENT16, 1024, 1024, 0,GL_DEPTH_COMPONENT, GL_FLOAT, 0);
     
 	 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);

@@ -13,23 +13,31 @@ float bg[] = {0,0,0.4};
 
 //two triangles put together to make a square
 	const float positions[] = {
-    	-5, -5, -0.5,
-    	-5, 5, -0.5,
-    	5, 5, -0.5,
-    	5, -5, -0.5
+    	-5, -5, -1,
+    	-5, 5, -1,
+    	5, 5, -1,
+    	5, -5, -1
 	};
-	const float data[] = {
-		1, 1, 1,
-		1, 1, 1,
-		1, 1, 1,
-		1, 1, 1,
+	const float normals[] = {
+		0, 0, 1,
+		0, 0, 1,
+		0, 0, 1,
+		0, 0, 1,
 	};
+float d = 1;
+    const float uvPositions[] = {
+    0, 0, d,
+    0, 0, d,
+    0, 0, d,
+    0, 0, d
+    };
+
 
 const int indices[] = {
     0, 3, 2, 0, 2, 1    
 };
 
-GLuint p_bo, i_bo, v_bo;
+GLuint VAO;
 
 Display* main_display;
 void keyPressedStatic(GLFWwindow* window, int key, int scancode, int action, int mods){
@@ -109,9 +117,9 @@ int Display::initialize(){
     }
 #endif
 
-    glEnable(GL_CULL_FACE);
-    glCullFace(GL_BACK);
-    glFrontFace(GL_CCW);
+    //glEnable(GL_CULL_FACE);
+    //glCullFace(GL_BACK);
+    //glFrontFace(GL_CCW);
 
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
@@ -205,51 +213,122 @@ int Display::initialize(){
     } else{
         printf("failed to buffer\n");
     }
+    
 	
-	
+    GLuint posBO, normBO, dataBO, indexBO;
+    
+    /*
+     *    Setup buffers, can be done without using a program.
+     *
+     */
+    glGenBuffers(1, &posBO);
+    glBindBuffer(GL_ARRAY_BUFFER, posBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float)*12, positions, GL_STREAM_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    
+    glGenBuffers(1, &normBO);
+    glBindBuffer(GL_ARRAY_BUFFER, normBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float)*12, normals, GL_STREAM_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    
+    glGenBuffers(1, &dataBO);
+    glBindBuffer(GL_ARRAY_BUFFER, dataBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float)*12, uvPositions, GL_STREAM_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    
+    glGenBuffers(1, &indexBO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(int)*6, indices, GL_STREAM_DRAW);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,0);
+    
+    /*
+     *    Setup attribute array.
+     *
+     */
+    GLuint positionAttribute = 0;
+    GLuint normalAttribute = 1;
+    GLuint dataAttribute = 2;
+    glGenVertexArrays(1, &VAO);
+    glBindVertexArray(VAO);
+    
+    glBindBuffer(GL_ARRAY_BUFFER, posBO);
+    glEnableVertexAttribArray(positionAttribute);
+    glVertexAttribPointer(positionAttribute, 3, GL_FLOAT, GL_FALSE, 0, 0);
+    
+    glBindBuffer(GL_ARRAY_BUFFER, normBO);
+    glEnableVertexAttribArray(normalAttribute);
+    glVertexAttribPointer(normalAttribute, 3, GL_FLOAT, GL_FALSE, 0, 0);
+    
+    glBindBuffer(GL_ARRAY_BUFFER, dataBO);
+    glEnableVertexAttribArray(dataAttribute);
+    glVertexAttribPointer(dataAttribute, 3, GL_FLOAT, GL_FALSE, 0, 0);
+    
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBO);
+    
+    glBindVertexArray(0);
+    printf("va @: %d\n", VAO);
     return 0;
 }
-
 
 int Display::render(){
     std::lock_guard<std::mutex> lock(mutex);
     
     GLuint depthBuffer = shadows->getDepthBuffer();
     GLuint shadowProgram = shadows->getProgram();
-    /*
+    
     glBindFramebuffer(GL_FRAMEBUFFER, depthBuffer);
     
-	glViewport(0, 0, 1024, 1024);
-	glEnable(GL_CULL_FACE);
-	glCullFace(GL_BACK); // Cull back-facing triangles -> draw only front-facing triangles
+    glViewport(0, 0, 1024, 1024);
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_FRONT);
+    //glFrontFace(GL_CCW);
+    // Clear the screen
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	// Clear the screen
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-
+    glUseProgram(shadowProgram);
+    glBindVertexArray(VAO);
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+    glBindVertexArray(0);
     
     for(Representation* rep: representations){
         rep->render(shadowProgram);
     }
-    */
+    
+    glUseProgram(0);
+    
+    
+    
+    
     // Render to the screen
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glViewport(0,0,width,height);
-	
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
+    //glFrontFace(GL_CCW);
+
 		
     glClearColor(bg[0], bg[1], bg[2], 0.0f);
     glClearDepth(1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
-	GLuint ShadowMapID = glGetUniformLocation(program, "shadowMap");
-	glActiveTexture(GL_TEXTURE1);
+	
+    GLuint ShadowMapID = glGetUniformLocation(program, "shadowMap");
+	glActiveTexture(GL_TEXTURE0);
 	GLuint depthTexture = shadows->getTextureID();
 	glBindTexture(GL_TEXTURE_2D, depthTexture);
-	glUniform1i(ShadowMapID, 1);
+	glUniform1i(ShadowMapID, 0);
 	
+    glUseProgram(program);
+    glBindVertexArray(VAO);
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+    glBindVertexArray(0);
+    glUseProgram(0);
+    
+    
     for(Representation* rep: representations){
         rep->render(program);
     }
+    
 	GetError();
     
     glfwSwapBuffers(window);

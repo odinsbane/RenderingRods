@@ -37,24 +37,36 @@ void main() {
 		tNorm = (orientationMatrix*vec4(normal, 0)).xyz;
 
         meshColor = convertData(data);
+        //meshColor = vec4(1, 1, 1, 1);
         shadowCoordinate = depthBiasMatrix*modelSpace;
-        shadowCoordinate = gl_Position;
+        //shadowCoordinate = gl_Position;
+        //shadowCoordinate = vec4(data.x, data.y, data.z, 1);
 }
 
 vec4 convertData(vec3 d){
-	float f = d.x;
+	
+    
 	float r, g, b;
-	if(f<middle){
-	    //cool colors;
-	    r = 1;
-	    b = 0;
-	    g = 0;
-	}else{
-	    //warm colors;
-	    r = 1;
-	    b = 0;
-	    g = f>high?1:(high - f)/(high - middle);
-	}
+    if(d.z==0){
+        float f = d.x;
+        b = 0;
+        //bendy rods.
+        if(f<middle){
+                //cool colors;
+            r = 1;
+            g = 0;
+        }else{
+            //warm colors;
+            r = 1;
+            g = f>high?1:(f - middle)/(high - middle);
+        }
+
+    } else{
+        //white.
+        r = 1;
+        b = 1;
+        g = 1;
+    }
 	
 	return vec4(r, g, b, 1);
 	

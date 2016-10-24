@@ -7,11 +7,18 @@ smooth in vec3 norm;
 smooth in vec3 tNorm;
 smooth in vec4 shadowCoordinate;
 
-vec4 lightIntensity = vec4(0.3, 0.3, 0.3, 1);
-vec4 ambientIntensity = vec4(0.8, 0.8, 0.8, 1);
+vec4 lightIntensity = vec4(0.7, 0.7, 0.7, 1);
+vec4 ambientIntensity = vec4(0.4, 0.4, 0.4, 1);
 
 uniform vec3 lightPos;
-uniform sampler2DShadow shadowMap;
+uniform sampler2D shadowMap;
+
+vec2 poissonDisk[4] = vec2[](
+                             vec2( -0.94201624, -0.39906216 ),
+                             vec2( 0.94558609, -0.76890725 ),
+                             vec2( -0.094184101, -0.92938870 ),
+                             vec2( 0.34495938, 0.29387760 )
+                             );
 
 float colorComponent(float mesh, float a, float i);
 void main() {
@@ -25,20 +32,42 @@ void main() {
 	
 	float incidenceCos = dot(norm, disp);
 	
-	if(incidenceCos<0){
+	if(incidenceCos<0.1){
+        incidenceCos = 0.1;
 	} else{
-		incidenceCos/pow(l, 0.1);
 	}
-	
-	float chi = dot(tNorm, disp);
-	
+    
+    
+    
+    float visibility = 1;
+    float bias = 0.0005;
+    float f = 1;
+    
+    for (int i=0;i<4;i++){
+        if ( texture( shadowMap, shadowCoordinate.xy + poissonDisk[i]/700.0 ).x  <  shadowCoordinate.z-bias ){
+            visibility-=0.2;
+        }
+    }
+    for (int i=0;i<4;i++){
+        if ( texture( shadowMap, shadowCoordinate.xy + poissonDisk[i]/350.0 ).x  <  shadowCoordinate.z-0.5*bias ){
+            visibility-=0.1;
+        }
+    }
+    for (int i=0;i<4;i++){
+        if ( texture( shadowMap, shadowCoordinate.xy + poissonDisk[i]/175.0 ).x  <  shadowCoordinate.z- 0.25*bias ){
+            visibility-=0.05;
+        }
+    }
+    
+    incidenceCos*=visibility;
+    
 	outputColor = vec4(
-		colorComponent(meshColor.x,ambientIntensity.x, incidenceCos*lightIntensity.x),  
-		colorComponent(meshColor.y,ambientIntensity.y, incidenceCos*lightIntensity.y),  
-		colorComponent(meshColor.z,ambientIntensity.z, incidenceCos*lightIntensity.z),  
+		colorComponent(f*meshColor.x,ambientIntensity.x, incidenceCos*lightIntensity.x),
+		colorComponent(f*meshColor.y,ambientIntensity.y, incidenceCos*lightIntensity.y),
+		colorComponent(f*meshColor.z,ambientIntensity.z, incidenceCos*lightIntensity.z),
 		1);
-	float visibility = texture(shadowMap, vec3(shadowCoordinate.xy, shadowCoordinate.z/shadowCoordinate.w));
-    outputColor = outputColor*visibility;
+    
+    
 }
 
 

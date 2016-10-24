@@ -60,8 +60,8 @@ void RodRepresentation::calculateData(std::vector<glm::vec3*> &values){
     	for(int j = 0; j<6; j++){
 			int dex = j*3 + (i)*18;
 			data[dex + 0] = f;
-			data[dex + 1] = f;
-			data[dex + 2] = f;
+			data[dex + 1] = 0;
+			data[dex + 2] = 0;
 		}
     }
     ave = ave/values.size();
@@ -81,7 +81,7 @@ void RodRepresentation::calculateData(std::vector<glm::vec3*> &values){
     
 }
 void RodRepresentation::updateData(std::vector<glm::vec3*> &values){
-	double radius = 0.01;
+	double radius = 0.032;
 	for(int i = 1; i<values.size(); i++){
 		glm::vec3 forward = glm::normalize((*values[i]) - (*values[i-1]));
 		
