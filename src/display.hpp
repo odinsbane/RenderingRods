@@ -91,7 +91,7 @@ class PlaneRepresentation : public Representation{
     float *normals;
     float *uvPositions;
     int *indices;
-
+    int pointCount = 3*6; //3 rows of hexagons.
     GLuint posBO, normBO, dataBO, indexBO, VAO;
 
     public:
@@ -115,22 +115,24 @@ class PlaneRepresentation : public Representation{
     
 };
 
-class SpringRepresentation{
+class SpringRepresentation : public Representation{
     float* positions;
     float* normals;
     float* data;
-    int* indexes;
+    int* indices;
     GLuint programId;
     GLuint pBO, nBO,dBO, iBO, vao;
-    void updateRepresentation(glm::dvec3 &a, glm::dvec3 &b);
+    int pointCount=3*6;
+    void updateRepresentation(glm::vec3 &a, glm::vec3 &b);
+    void prepareBufferes();
 public:
-    SpringRepresentation(glm::dvec3 &a, glm::dvec3 &b);
+    SpringRepresentation(glm::vec3 &a, glm::vec3 &b);
     void render(GLuint program);
     
     ~SpringRepresentation(){
         
         delete[] positions;
-        delete[] indexes;
+        delete[] indices;
         delete[] normals;
         delete[] data;
         

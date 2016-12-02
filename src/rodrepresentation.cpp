@@ -22,9 +22,9 @@ RodRepresentation::RodRepresentation(Rod* rod, GLuint program){
     		indexes[c++] = 6*(i) + (j+1)%6;
     	}
     }
-    indexes[0] = 0;
-    indexes[1] = 6;
-    indexes[2] = 1;
+    //indexes[0] = 0;
+    //indexes[1] = 6;
+    //indexes[2] = 1;
 	prepareBuffers();
 	
 }

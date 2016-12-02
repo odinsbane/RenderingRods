@@ -83,5 +83,4 @@ void PlaneRepresentation::setup(GLuint program){
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBO);
     
     glBindVertexArray(0);
-    printf("va @: %d\n", VAO);
 }

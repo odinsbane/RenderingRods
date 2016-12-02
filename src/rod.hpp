@@ -5,6 +5,7 @@
 #include <math.h>
 #include <glm/vec3.hpp>
 
+
 class Rod{
     std::vector<glm::vec3*> points;
     int N; //number of segments
@@ -19,8 +20,25 @@ class Rod{
 		}
 		Rod* createRod(int N, double l, glm::vec3 &pos, glm::vec3 &dir);
         glm::vec3* getPoint(int dex){ return points[dex];}
+        glm::vec3 getLocation(double s);
         std::vector<glm::vec3*>& getPoints(){return points;}
         
 };
+
+class Link{
+public:
+    int A,B;
+    double aS;
+    double bS;
+    
+    Link(int a, int b, double as, double bs){
+        A = a;
+        B = b;
+        aS = as;
+        bS = bs;
+    }
+    
+};
+
 
 #endif

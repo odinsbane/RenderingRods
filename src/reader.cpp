@@ -4,32 +4,76 @@ Reader::Reader(const std::string &filename){
     inputStream = new std::ifstream(filename, std::ifstream::binary);
 }
 
+std::vector<Rod*> Reader::getRods(){
+    return rods;
+}
 
-std::vector<Rod*> Reader::loadRods(){
+std::vector<Link*> Reader::getLinks(){
+    return links;
+}
+
+void Reader::load(){
 	closed=false;
-    std::vector<Rod*> rods;
+    
 	long time = nextLong();
 	
-	double width = nextDouble();
+	width = nextDouble();
 	int type = nextInt();
 	printf("loading data from %ld :: %f :: %d \n", time, width, type);	
-	while(type==0){
-		std::vector<glm::vec3*> points;
-		double length = nextDouble();
-		double k = nextDouble();
-		double kappa = nextDouble();
-		int n = nextInt();
-		
-		for(int i = 0; i<n; i++){
-		    points.push_back( nextPoint());
-		}
-		
+	while(type!=-1){
+        if(type==0){
+            std::vector<glm::vec3*> points;
+            double length = nextDouble();
+            double k = nextDouble();
+            double kappa = nextDouble();
+            int n = nextInt();
+            
+            for(int i = 0; i<n; i++){
+                points.push_back( nextPoint());
+            }
+            rods.push_back( new Rod(length, points));
+        } else if(type==1){
+
+            double l = nextDouble();
+            double k = nextDouble();
+            int a = nextInt();
+            double as = nextDouble();
+            int b = nextInt();
+            double bs = nextDouble();
+            links.push_back(new Link(a, b, as, bs));
+            
+        } else if(type==2){
+            
+             double stalkLength = nextDouble();
+             double stalkStiffness = nextDouble();
+             double springLength = nextDouble();
+             double springStiffness = nextDouble();
+             double bindTau = nextDouble();
+            
+             int aDex = nextInt();
+             if(aDex>=0) {
+                 double aLoc = nextDouble();
+                 double aTime = nextDouble();
+             }
+             
+             int bDex = nextInt();
+             
+             if(bDex>=0) {
+                 double bLoc = nextDouble();
+                 double bTime = nextDouble();
+             }
+            
+        } else if(type==3){
+            int dex = nextInt();
+            double loc = nextDouble();
+            double fx = nextDouble();
+            double fy = nextDouble();
+            double fz = nextDouble();
+        }
 		type = nextInt();
-		rods.push_back( new Rod(length, points));
 	}
 	//printf("%ld :: %f :: %d \n", time, 1.0, 0);	
 	close();
-	return rods;  
 }
 glm::vec3* Reader::nextPoint(){
 	double x = nextDouble();

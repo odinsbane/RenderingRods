@@ -13,6 +13,7 @@ uniform mat4 depthBiasMatrix;
 uniform float low;
 uniform float high;
 uniform float middle;
+uniform vec3 lightPos;
 
 out vec4 meshColor;
 
@@ -20,7 +21,8 @@ smooth out vec3 norm;
 smooth out vec3 pos;
 smooth out vec3 tNorm;
 smooth out vec4 shadowCoordinate;
-
+smooth out vec3 toLight;
+smooth out vec3 transLight;
 vec4 convertData(vec3 d);
 
 void main() {
@@ -35,12 +37,14 @@ void main() {
         norm = normal;
 
 		tNorm = (orientationMatrix*vec4(normal, 0)).xyz;
-
+		toLight = lightPos - pos;
+		transLight = normalize((orientationMatrix*vec4(toLight,0)).xyz);
         meshColor = convertData(data);
         //meshColor = vec4(1, 1, 1, 1);
         shadowCoordinate = depthBiasMatrix*modelSpace;
         //shadowCoordinate = gl_Position;
         //shadowCoordinate = vec4(data.x, data.y, data.z, 1);
+        
 }
 
 vec4 convertData(vec3 d){

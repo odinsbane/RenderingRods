@@ -74,7 +74,7 @@ void Shadows::setProjectViewMatrix(){
     GLuint depthMatrixID = glGetUniformLocation(program, "depthMVP");
 	
 	// Compute the MVP matrix from the light's point of view
- 	glm::mat4 depthProjectionMatrix = glm::ortho<float>(-10,10,-10,10,-10,20);
+ 	glm::mat4 depthProjectionMatrix = glm::ortho<float>(-5.f,5.f,-5.f,5.f,-1.f,5.f);
  	glm::mat4 depthViewMatrix = glm::lookAt(lightInvDir, glm::vec3(0,0,0), glm::vec3(0,1,0));
  	glm::mat4 depthModelMatrix = glm::mat4(1.0);
  	glm::mat4 depthMVP = depthProjectionMatrix * depthViewMatrix * depthModelMatrix;

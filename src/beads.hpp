@@ -6,6 +6,6 @@
 #define __BEADS__
 
 
-
-
+glm::vec3 wrap(double width, glm::vec3 src, glm::vec3 target);
+double wrap(double width, double v);
 #endif

@@ -21,4 +21,23 @@ Rod::Rod(double l, std::vector<glm::vec3*> p){
 	N = points.size(); 
 	length = l; ds = l/N;
 }
-		
+
+glm::vec3 Rod::getLocation(double s){
+    double dex = (length/2 + s)/ds;
+    if(dex<0){
+        return glm::vec3(*points[0]);
+    } else if(dex>=points.size()-1){
+        return glm::vec3(*points[N-1]);
+    } else{
+        int low = (int)dex;
+        int high = low + 1;
+        double f = dex - low;
+        glm::vec3 lo = *points[low];
+        glm::vec3 hi = *points[high];
+        return glm::vec3(
+                         lo.x*(1-f) + hi.x*f,
+                         lo.y*(1-f) + hi.y*f,
+                         lo.z*(1-f) + hi.z*f
+                         );
+    }
+}

@@ -6,11 +6,12 @@ smooth in vec3 pos;
 smooth in vec3 norm;
 smooth in vec3 tNorm;
 smooth in vec4 shadowCoordinate;
+smooth in vec3 toLight;
+smooth in vec3 transLight;
 
 vec4 lightIntensity = vec4(0.7, 0.7, 0.7, 1);
 vec4 ambientIntensity = vec4(0.4, 0.4, 0.4, 1);
 
-uniform vec3 lightPos;
 uniform sampler2D shadowMap;
 
 vec2 poissonDisk[4] = vec2[](
@@ -23,7 +24,7 @@ vec2 poissonDisk[4] = vec2[](
 float colorComponent(float mesh, float a, float i);
 void main() {
     
-	vec3 disp = lightPos - pos;
+	vec3 disp = toLight;
 	
 	float l = dot(disp, disp);
 	if(l>0){
@@ -32,8 +33,8 @@ void main() {
 	
 	float incidenceCos = dot(norm, disp);
 	
-	if(incidenceCos<0.1){
-        incidenceCos = 0.1;
+	if(incidenceCos<0.01){
+        incidenceCos = 0.01;
 	} else{
 	}
     
@@ -44,22 +45,19 @@ void main() {
     float f = 1;
     
     for (int i=0;i<4;i++){
-        if ( texture( shadowMap, shadowCoordinate.xy + poissonDisk[i]/700.0 ).x  <  shadowCoordinate.z-bias ){
+        if ( texture( shadowMap, shadowCoordinate.xy + poissonDisk[i]/1000.0 ).x  <  shadowCoordinate.z-bias ){
             visibility-=0.2;
         }
-    }
-    for (int i=0;i<4;i++){
-        if ( texture( shadowMap, shadowCoordinate.xy + poissonDisk[i]/350.0 ).x  <  shadowCoordinate.z-0.5*bias ){
-            visibility-=0.1;
+        if ( texture( shadowMap, shadowCoordinate.xy + poissonDisk[i]/500.0 ).x  <  shadowCoordinate.z-0.5*bias ){
+            visibility-=0.025;
         }
-    }
-    for (int i=0;i<4;i++){
-        if ( texture( shadowMap, shadowCoordinate.xy + poissonDisk[i]/175.0 ).x  <  shadowCoordinate.z- 0.25*bias ){
-            visibility-=0.05;
+        if ( texture( shadowMap, shadowCoordinate.xy + poissonDisk[i]/250.0 ).x  <  shadowCoordinate.z- 0.25*bias ){
+            visibility-=0.005;
         }
     }
     
     incidenceCos*=visibility;
+    
     
 	outputColor = vec4(
 		colorComponent(f*meshColor.x,ambientIntensity.x, incidenceCos*lightIntensity.x),
