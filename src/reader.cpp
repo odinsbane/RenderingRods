@@ -12,6 +12,10 @@ std::vector<Link*> Reader::getLinks(){
     return links;
 }
 
+std::vector<Motor*> Reader::getMotors(){
+    return motors;
+}
+
 void Reader::load(){
 	closed=false;
     
@@ -50,18 +54,37 @@ void Reader::load(){
              double springStiffness = nextDouble();
              double bindTau = nextDouble();
             
-             int aDex = nextInt();
-             if(aDex>=0) {
-                 double aLoc = nextDouble();
-                 double aTime = nextDouble();
+             double x0 = nextDouble();
+             double y0 = nextDouble();
+             double z0 = nextDouble();
+            
+             double x1 = nextDouble();
+             double y1 = nextDouble();
+             double z1 = nextDouble();
+             Motor* motor = new Motor(glm::vec3(x0,y0,z0), glm::vec3(x1, y1, z1));
+            motor->length = stalkLength;
+            motor->stiffness = stalkStiffness;
+            motor->springStiffness = springStiffness;
+            motor->springLength = springLength;
+            motor->bindTau = bindTau;
+            
+            
+            int aDex = nextInt();
+            motor->head=aDex;
+            if(aDex>=0) {
+                motor->headS = nextDouble();
+                motor->headTime = nextDouble();
              }
              
              int bDex = nextInt();
-             
+            motor->tail = bDex;
              if(bDex>=0) {
-                 double bLoc = nextDouble();
-                 double bTime = nextDouble();
+                 motor->tailS = nextDouble();
+                 motor->tailTime = nextDouble();
              }
+            
+            motors.push_back(motor);
+            
             
         } else if(type==3){
             int dex = nextInt();

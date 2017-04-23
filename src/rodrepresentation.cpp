@@ -1,8 +1,7 @@
 #include "display.hpp"
 
-RodRepresentation::RodRepresentation(Rod* rod, GLuint program){
-	
-    std::vector<glm::vec3*> pts = rod->getPoints();
+RodRepresentation::RodRepresentation(std::vector<glm::vec3*> pts,double r, GLuint program){
+    radius = r;
     N = pts.size();
     points = new float[6*N*3];
     normals = new float[6*N*3];
@@ -42,46 +41,19 @@ void RodRepresentation::render(GLuint program){
 	local curvature for now.
 */
 void RodRepresentation::calculateData(std::vector<glm::vec3*> &values){
-	max = 0;
-	ave = 0;
-	std = 0;
-    for(int i = 1; i<values.size()-1; i++){
-    	glm::vec3 t0 = glm::normalize((*values[i]) - (*values[i-1]));
-		glm::vec3 t1 = glm::normalize((*values[i+1]) - (*values[i]));
-		
-    	double f = glm::length(t1 - t0);
-    	t1 = t1 - t0;
-    	ave += f;
-    	std += f*f;
-    	if(f>max){
-    	    max = f;
-    	}
-    	
-    	for(int j = 0; j<6; j++){
-			int dex = j*3 + (i)*18;
-			data[dex + 0] = f;
-			data[dex + 1] = 0;
-			data[dex + 2] = 0;
-		}
-    }
-    ave = ave/values.size();
-    std = std/values.size();
-    
-    std = sqrt(std - ave*ave);
     
     for(int i = 0; i<values.size(); i+=values.size()-1){
     	for(int j = 0; j<6; j++){
 			int dex = j*3 + (i)*18;
-			data[dex + 0] = 0;
-			data[dex + 1] = 0;
-			data[dex + 2] = 0;
+			data[dex + 0] = red;
+			data[dex + 1] = green;
+			data[dex + 2] = blue;
 		}
     }
     
     
 }
 void RodRepresentation::updateData(std::vector<glm::vec3*> &values){
-	double radius = 0.032;
 	for(int i = 1; i<values.size(); i++){
 		glm::vec3 forward = glm::normalize((*values[i]) - (*values[i-1]));
 		
@@ -151,16 +123,15 @@ void RodRepresentation::updateData(std::vector<glm::vec3*> &values){
 		} 
 	}
 	calculateData(values);
-	/*
-	for(int i = 0; i<N*6; i++){
-		printf("(");
-		//each collection of points.
-		for(int j = 0; j<3; j++){
-			int s = i*3;
-			printf("%f, ",points[s]+j);
-		}
-		printf(")\n");
-	}*/
+}
+void RodRepresentation::refreshBuffers(){
+    glBindBuffer(GL_ARRAY_BUFFER, pBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float)*6*3*N, points, GL_STREAM_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, nBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float)*6*3*N, normals, GL_STREAM_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, dBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float)*6*3*N, data, GL_STREAM_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 void RodRepresentation::prepareBuffers(){

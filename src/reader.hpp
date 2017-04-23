@@ -14,6 +14,8 @@ class Reader{
 		void chunk();
     std::vector<Rod*> rods;
     std::vector<Link*> links;
+    std::vector<Motor*> motors;
+    
 	public:
         double width;
 		Reader(const std::string &filename);
@@ -25,6 +27,7 @@ class Reader{
 		glm::vec3* nextPoint();
     std::vector<Rod*> getRods();
     std::vector<Link*> getLinks();
+    std::vector<Motor*> getMotors();
 
 };
 

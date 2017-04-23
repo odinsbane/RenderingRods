@@ -1,10 +1,10 @@
 #include "display.hpp"
 PlaneRepresentation::PlaneRepresentation(){
     positions = new float[12]{
-        -5, -5, -1,
-        -5, 5, -1,
-        5, 5, -1,
-        5, -5, -1
+        -5, -5, -0.25,
+        -5, 5, -0.25,
+        5, 5, -0.25,
+        5, -5, -0.25
     };
     normals = new float[12]{
         0, 0, 1,
@@ -15,10 +15,10 @@ PlaneRepresentation::PlaneRepresentation(){
     
     float d = -0.5;
     uvPositions = new float[12]{
-        0, 0, d,
-        0, 0, d,
-        0, 0, d,
-        0, 0, d
+        1, 1, 1,
+        1, 1, 1,
+        1, 1, 1,
+        1, 1, 1
     };
     indices = new int[6]{
         0, 3, 2, 0, 2, 1

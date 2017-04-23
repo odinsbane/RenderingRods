@@ -123,12 +123,16 @@ class SpringRepresentation : public Representation{
     GLuint programId;
     GLuint pBO, nBO,dBO, iBO, vao;
     int pointCount=3*6;
-    void updateRepresentation(glm::vec3 &a, glm::vec3 &b);
     void prepareBufferes();
 public:
+    double red = 1;
+    double green = 1;
+    double blue = 0;
+    
     SpringRepresentation(glm::vec3 &a, glm::vec3 &b);
     void render(GLuint program);
-    
+    void updateRepresentation(glm::vec3 &a, glm::vec3 &b);
+    void refreshBuffers();
     ~SpringRepresentation(){
         
         delete[] positions;
@@ -146,7 +150,6 @@ public:
 };
 
 class RodRepresentation : public Representation{
-    Rod* rod;
     float* points;
     float* normals;
     float* data;
@@ -157,9 +160,13 @@ class RodRepresentation : public Representation{
     void calculateData(std::vector<glm::vec3*> &values);
     void prepareBuffers();
  public:
+    double red = 1;
+    double green = 0;
+    double blue = 0;
+    double radius;
 	double ave, std, max;
-    RodRepresentation(Rod* rod, GLuint program);
-    
+    RodRepresentation(std::vector<glm::vec3*>,double r, GLuint program);
+    void refreshBuffers();
     void render(GLuint program);
     void updateData(std::vector<glm::vec3*> &values);
     ~RodRepresentation(){
@@ -177,6 +184,31 @@ class RodRepresentation : public Representation{
     }
 };
 
+class MotorRepresentation : public Representation{
+    RodRepresentation* stalk;
+    SpringRepresentation* headSpring;
+    SpringRepresentation* tailSpring;
+public:
+    MotorRepresentation(
+                        Motor* motor,
+                        glm::vec3 headAttachment,
+                        glm::vec3 tailAttachment, GLuint program
+                        );
+    
+    void updateData(
+                Motor* motor,
+                glm::vec3 headAttachment,
+                glm::vec3 tailAttachment );
+    void render(GLuint program);
+    void refreshBuffers();
+    
+    ~MotorRepresentation(){
+        delete stalk;
+        delete headSpring;
+        delete tailSpring;
+    }
+};
+
 class Display{
 private:
     GLFWwindow* window;
@@ -191,13 +223,10 @@ private:
     int last = 200;
     Camera* camera;
     Shadows* shadows;
-    int running = 0;
     std::mutex mutex;
     std::mutex* starter;
     std::condition_variable* condition;
     std::vector<Representation*> representations;
-    double ave, std, max;
-    void updateColorRange();
     
 public:
     Display();
@@ -212,10 +241,9 @@ public:
     void mouseMoved(GLFWwindow* window, double x, double y);
     void updateLights();
     void addRepresentation(Representation* rod);
-    void addRodRepresentation(RodRepresentation* rod);
     GLuint getProgram(){return program;}
     double RATE = 0.001;
-
+    int running = 0;
     void moveLights(float dx, float dy, float dz);
     ~Display(){
         for(Representation* rep: representations){

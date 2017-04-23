@@ -63,13 +63,25 @@ void SpringRepresentation::updateRepresentation(glm::vec3 &ptA, glm::vec3 &ptB) 
             normals[dex + 1] = norm.y;
             normals[dex + 2] = norm.z;
             
-            data[dex + 0] = 0.f;
-            data[dex + 1] = 0.f;
-            data[dex + 2] = 1.f;
+            data[dex + 0] = red;
+            data[dex + 1] = green;
+            data[dex + 2] = blue;
         }
     }
 
 
+}
+
+void SpringRepresentation::refreshBuffers(){
+    glBindBuffer(GL_ARRAY_BUFFER, pBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float)*pointCount*3, positions, GL_STREAM_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, nBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float)*pointCount*3, normals, GL_STREAM_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, dBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float)*pointCount*3, data, GL_STREAM_DRAW);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, iBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(int)*2*6*6, indices, GL_STREAM_DRAW);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,0);
 }
 
 void SpringRepresentation::prepareBufferes(){

@@ -10,9 +10,6 @@ uniform mat4 perspectiveMatrix;
 uniform mat4 orientationMatrix;
 uniform mat4 depthBiasMatrix;
 
-uniform float low;
-uniform float high;
-uniform float middle;
 uniform vec3 lightPos;
 
 out vec4 meshColor;
@@ -39,39 +36,12 @@ void main() {
 		tNorm = (orientationMatrix*vec4(normal, 0)).xyz;
 		toLight = lightPos - pos;
 		transLight = normalize((orientationMatrix*vec4(toLight,0)).xyz);
-        meshColor = convertData(data);
+        meshColor = vec4(data.x, data.y, data.z, 1);
         //meshColor = vec4(1, 1, 1, 1);
         shadowCoordinate = depthBiasMatrix*modelSpace;
         //shadowCoordinate = gl_Position;
-        //shadowCoordinate = vec4(data.x, data.y, data.z, 1);
+        //shadowCoordinate = ;
         
 }
 
-vec4 convertData(vec3 d){
-	
-    
-	float r, g, b;
-    if(d.z==0){
-        float f = d.x;
-        b = 0;
-        //bendy rods.
-        if(f<middle){
-                //cool colors;
-            r = 1;
-            g = 0;
-        }else{
-            //warm colors;
-            r = 1;
-            g = f>high?1:(f - middle)/(high - middle);
-        }
 
-    } else{
-        //white.
-        r = 1;
-        b = 1;
-        g = 1;
-    }
-	
-	return vec4(r, g, b, 1);
-	
-}

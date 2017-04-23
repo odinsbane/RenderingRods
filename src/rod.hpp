@@ -40,5 +40,25 @@ public:
     
 };
 
+class Motor{
+    
+public:
+    int head, tail;
+    double headS, tailS;
+    double headTime, tailTime;
+    double length, stiffness, springStiffness, springLength, bindTau;
+    
+    std::vector<glm::vec3*> points;
+    
+    Motor(glm::vec3 h, glm::vec3 t){
+        points.push_back(new glm::vec3(h));
+        points.push_back(new glm::vec3(t));
+    }
+    
+    ~Motor(){
+        delete points[0];
+        delete points[1];
+    }
+};
 
 #endif

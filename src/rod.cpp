@@ -1,7 +1,7 @@
 #include "rod.hpp"
 
 Rod* Rod::createRod(int n, double l, glm::vec3 &pos, glm::vec3 &dir){
-	ds = l/(N-1);
+    ds = l/(N-1);
 	length = l;
 	N = n;
 	for(int i = 0; i<N; i++){
@@ -19,11 +19,13 @@ Rod* Rod::createRod(int n, double l, glm::vec3 &pos, glm::vec3 &dir){
 Rod::Rod(double l, std::vector<glm::vec3*> p){ 
 	points = p; 
 	N = points.size(); 
-	length = l; ds = l/N;
+	length = l;
+    ds = l/(N-1);
 }
 
 glm::vec3 Rod::getLocation(double s){
     double dex = (length/2 + s)/ds;
+    //printf("s: %f\tdex: %f\n", s, dex);
     if(dex<0){
         return glm::vec3(*points[0]);
     } else if(dex>=points.size()-1){

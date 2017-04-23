@@ -46,9 +46,6 @@ void mouseMovedStatic(GLFWwindow* window, double x, double y){
 
 Display::Display(){
     main_display=this;
-    ave = 0;
-    std = 0;
-    max = 0;
 }
 
 int Display::initialize(){
@@ -407,37 +404,6 @@ void Display::moveLights(float dx, float dy, float dz) {
 
 }
 
-void Display::addRodRepresentation(RodRepresentation *rod){
-	ave = ave*rods + rod->ave;
-	std = std*std*rods + rod->std*rod->std;
-	max = max>rod->max?max:rod->max;
-	
-	addRepresentation(rod);
-	
-	rods++;
-	
-    ave = ave/rods;
-    std = sqrt(std/rods);
-    updateColorRange();
-}
-
 void Display::addRepresentation(Representation *rod){
 	representations.push_back(rod);
 }
-
-void Display::updateColorRange(){
-	float low = ave - std;
-	if(low<0||low==ave){
-	    low = ave*0.5;
-	}
-	float high = ave + std;
-	if(high>max||high==ave){
-		high = (max - ave)*0.5 + ave;
-	}
-	glUseProgram(program);
-    glUniform1f(glGetUniformLocation(program, "low"), low);
-    glUniform1f(glGetUniformLocation(program, "middle"), ave);
-    glUniform1f(glGetUniformLocation(program, "high"), high);
-	glUseProgram(0);
-}
-
