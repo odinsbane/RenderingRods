@@ -117,7 +117,7 @@ bool Shadows::setTarget(){
 
 	 glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, depthTexture, 0);
 	 
-	 glDrawBuffer(GL_NONE); // No color buffer is drawn to.
+	 //glDrawBuffer(GL_NONE); // No color buffer is drawn to.
 
 	 // Always check that our framebuffer is ok
 	 if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
