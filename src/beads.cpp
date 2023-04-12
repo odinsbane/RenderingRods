@@ -68,7 +68,8 @@ int main(int argc, char** args){
     int total = readers.size();
     int count = 0;
     int last=-1;
-    
+	
+	
     while(display.running==0){
     	display.render();
     	last = count;

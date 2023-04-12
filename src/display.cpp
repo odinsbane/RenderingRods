@@ -240,7 +240,9 @@ int Display::render(){
     glfwSwapBuffers(window);
 
     glfwPollEvents();
-
+    if(recording){
+		recordFrame();
+	}
     return running;
 
 }
@@ -315,6 +317,9 @@ void Display::keyPressed(GLFWwindow* window, int key, int scancode, int action, 
                 break;
             case GLFW_KEY_J:
                 moveLights(0.f, 0.f, 0.1f);
+                break;
+            case GLFW_KEY_R:
+                startRecording();
                 break;
         }
     }
@@ -406,4 +411,28 @@ void Display::moveLights(float dx, float dy, float dz) {
 
 void Display::addRepresentation(Representation *rod){
 	representations.push_back(rod);
+}
+
+void Display::startRecording(){
+	if(recording) return;
+	recording = true;
+	writer = new TiffWriter("testing.tif", height, width);
+}
+
+void Display::recordFrame(){
+	if( !recording ) return;
+	
+	glReadPixels(0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, writer->getPixbuf());
+	writer->writeFrame();
+	if(writer->getCount() > 200){
+		finishRecording();
+	}
+}
+
+void Display::finishRecording(){
+	if( !recording ) return;
+	writer->close();
+	recording = false;
+	delete writer;
+	writer = 0;
 }

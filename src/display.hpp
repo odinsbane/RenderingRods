@@ -30,6 +30,7 @@
 
 #include "rod.hpp"
 #include "error.h"
+#include "tiffwriter.hpp"
 
 bool shaderStatus(GLuint &shader);
 bool programStatus(GLuint &program);
@@ -227,7 +228,8 @@ private:
     std::mutex* starter;
     std::condition_variable* condition;
     std::vector<Representation*> representations;
-    
+    TiffWriter* writer;
+    bool recording = false;
 public:
     Display();
     int initialize();
@@ -241,16 +243,26 @@ public:
     void mouseMoved(GLFWwindow* window, double x, double y);
     void updateLights();
     void addRepresentation(Representation* rod);
+    void snapshot();
     GLuint getProgram(){return program;}
     double RATE = 0.001;
     int running = 0;
+    int getWidth(){ return width;}
+    int getHeight(){ return height;}
     void moveLights(float dx, float dy, float dz);
+    void startRecording();
+    void recordFrame();
+    void finishRecording();
     ~Display(){
         for(Representation* rep: representations){
             delete rep;
         }
         delete shadows;
         delete camera;
+        if(recording){
+			writer->close();
+			delete writer;
+		}
         glDeleteProgram(program);
     }
 };
