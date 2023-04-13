@@ -6,6 +6,8 @@ dat files and creates a 3D representation
 
 ![two filaments and a motor](testing-1.gif)
 
+![myosin motors one a network of filaments](myosin-sim.webm)
+
 ## opengl + glfw
 
 The rendering is done using opengl with glfw. 

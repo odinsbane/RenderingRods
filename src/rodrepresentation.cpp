@@ -42,7 +42,7 @@ void RodRepresentation::render(GLuint program){
 */
 void RodRepresentation::calculateData(std::vector<glm::vec3*> &values){
     
-    for(int i = 0; i<values.size(); i+=values.size()-1){
+    for(int i = 0; i<values.size(); i++){
     	for(int j = 0; j<6; j++){
 			int dex = j*3 + (i)*18;
 			data[dex + 0] = red;
