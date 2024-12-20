@@ -67,6 +67,7 @@ class Shadows{
     Camera* camera;
     
 	public:
+        int size=4096;
 	    Shadows(Camera* cam);
 	    GLuint getDepthBuffer();
 	    GLuint getProgram(){return program;}
@@ -243,6 +244,7 @@ public:
     void mouseMoved(GLFWwindow* window, double x, double y);
     void updateLights();
     void addRepresentation(Representation* rod);
+    void removeRepresentation(Representation* r);
     void snapshot();
     GLuint getProgram(){return program;}
     double RATE = 0.001;

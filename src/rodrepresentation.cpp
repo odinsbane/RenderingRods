@@ -59,7 +59,7 @@ void RodRepresentation::updateData(std::vector<glm::vec3*> &values){
 		
 		//find an up.
 		glm::vec3 a = glm::vec3(0, 0, 1) - forward.z*forward;
-		if(a.length()==0){
+		if(glm::length(a) < 9e-1){
 			a = glm::vec3(0, 1, 0) - forward.y*forward;
 		}
 		a = glm::normalize(a);

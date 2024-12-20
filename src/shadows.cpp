@@ -108,7 +108,7 @@ bool Shadows::setTarget(){
 	 
 	 glGenTextures(1, &depthTexture);
 	 glBindTexture(GL_TEXTURE_2D, depthTexture);
-     glTexImage2D(GL_TEXTURE_2D, 0,GL_DEPTH_COMPONENT16, 1024, 1024, 0,GL_DEPTH_COMPONENT, GL_FLOAT, 0);
+     glTexImage2D(GL_TEXTURE_2D, 0,GL_DEPTH_COMPONENT16, size, size, 0,GL_DEPTH_COMPONENT, GL_FLOAT, 0);
     
 	 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);

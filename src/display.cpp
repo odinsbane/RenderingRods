@@ -194,8 +194,8 @@ int Display::render(){
     GLuint shadowProgram = shadows->getProgram();
     
     glBindFramebuffer(GL_FRAMEBUFFER, depthBuffer);
-    
-    glViewport(0, 0, 1024, 1024);
+
+    glViewport(0, 0, shadows->size, shadows->size);
     glEnable(GL_CULL_FACE);
     glCullFace(GL_FRONT);
     //glFrontFace(GL_CCW);
@@ -209,13 +209,18 @@ int Display::render(){
     glUseProgram(0);
     
     
-    
+
     
     // Render to the screen
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glViewport(0,0,width,height);
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
+    glEnable ( GL_DEPTH_TEST );
+
+    //glEnable(GL_BLEND);
+    //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    //glBlendFunc(GL_SRC_ALPHA, GL_ONE);
     //glFrontFace(GL_CCW);
 
 		
@@ -234,7 +239,7 @@ int Display::render(){
     for(Representation* rep: representations){
         rep->render(program);
     }
-    
+
 	GetError();
     
     glfwSwapBuffers(window);
@@ -255,8 +260,6 @@ void Display::graphicsLoop(){
     while(running==0){
         render();
     }
-    
-    
 }
 
 
@@ -413,6 +416,11 @@ void Display::addRepresentation(Representation *rod){
 	representations.push_back(rod);
 }
 
+void Display::removeRepresentation(Representation* rep){
+    std::lock_guard<std::mutex> lock(mutex);
+    std::erase(representations, rep);
+}
+
 void Display::startRecording(){
 	if(recording) return;
 	recording = true;
@@ -421,7 +429,6 @@ void Display::startRecording(){
 
 void Display::recordFrame(){
 	if( !recording ) return;
-	
 	glReadPixels(0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, writer->getPixbuf());
 	writer->writeFrame();
 	if(writer->getCount() > 200){

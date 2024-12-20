@@ -63,8 +63,8 @@ void main() {
 		colorComponent(f*meshColor.x,ambientIntensity.x, incidenceCos*lightIntensity.x),
 		colorComponent(f*meshColor.y,ambientIntensity.y, incidenceCos*lightIntensity.y),
 		colorComponent(f*meshColor.z,ambientIntensity.z, incidenceCos*lightIntensity.z),
-		1);
-    
+		1.0);
+
     
 }
 
